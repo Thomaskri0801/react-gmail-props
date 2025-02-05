@@ -4,15 +4,23 @@ import initialEmails from './data/emails'
 
 import './styles/App.css'
 import Emails from './components/Emails'
+import Search from './components/Search'
+import EmailDetails from './components/EmailDetails'
 
 const getReadEmails = emails => emails.filter(email => !email.read)
 
 const getStarredEmails = emails => emails.filter(email => email.starred)
 
+const getFilteredEmails = (emails, searchTerm) => {
+  return emails.filter(email => email.title.toLowerCase().includes(searchTerm.toLowerCase()))
+}
+
 function App() {
   const [emails, setEmails] = useState(initialEmails)
   const [hideRead, setHideRead] = useState(false)
   const [currentTab, setCurrentTab] = useState('inbox')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [emailDetails, setEmailDetails] = useState(null)
 
   const unreadEmails = emails.filter(email => !email.read)
   const starredEmails = emails.filter(email => email.starred)
@@ -35,12 +43,24 @@ function App() {
     setEmails(updatedEmails)
   }
 
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm)
+  }
+
+  const handleEmailDetails = (email) => {
+    setEmailDetails(email)
+  }
+
   let filteredEmails = emails
 
   if (hideRead) filteredEmails = getReadEmails(filteredEmails)
 
   if (currentTab === 'starred')
     filteredEmails = getStarredEmails(filteredEmails)
+
+  if (searchTerm) filteredEmails = getFilteredEmails(filteredEmails, searchTerm)
+
+  console.log(emailDetails);
 
   return (
     <div className="app">
@@ -56,9 +76,8 @@ function App() {
           />
         </div>
 
-        <div className="search">
-          <input className="search-bar" placeholder="Search mail" />
-        </div>
+        <Search handleSearch={handleSearch} />
+
       </header>
       <nav className="left-menu">
         <ul className="inbox-list">
@@ -89,7 +108,16 @@ function App() {
         </ul>
       </nav>
       <main className="emails">
-        <Emails filteredEmails={filteredEmails} toggleRead={toggleRead} toggleStar={toggleStar}/>
+        {emailDetails !== null ? (
+                <EmailDetails email={emailDetails} handleEmailDetails= {handleEmailDetails}/>
+            ) : (
+                <Emails
+                    filteredEmails={filteredEmails}
+                    toggleRead={toggleRead}
+                    toggleStar={toggleStar}
+                    handleEmailDetails={handleEmailDetails}
+                />
+            )}
       </main>
     </div>
   )

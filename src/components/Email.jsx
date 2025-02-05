@@ -3,6 +3,8 @@ function Email(props) {
     const index = props.index;
     const toggleRead = props.toggleRead;
     const toggleStar = props.toggleStar;
+    const handleEmailDetails = props.handleEmailDetails;
+    console.log(handleEmailDetails);
     
     return (
         <li
@@ -26,7 +28,7 @@ function Email(props) {
                 />
               </div>
               <div className="sender">{email.sender}</div>
-              <div className="title">{email.title}</div>
+              <div className="title" onClick={() => handleEmailDetails(email)}>{email.title}</div>
             </li>
     );
 }
